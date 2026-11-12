@@ -33,3 +33,10 @@ The streaming variant decodes incrementally with `StringDecoder`, so a multi-byt
 - A lone null byte (`'\0'`) yields `['']`: the terminator closes an empty record and there is no data after it.
 - Consecutive null bytes in the middle (`'a\0\0b'`) yield `['a', '', 'b']`.
 - Newlines are ordinary characters and are never split on.
+
+## Design notes
+
+The window stores values eagerly rather than keeping running aggregates. Running
+sums drift with floating point over long streams, and recomputing from a small
+buffer is cheap enough that the drift is not worth the speed.
+
